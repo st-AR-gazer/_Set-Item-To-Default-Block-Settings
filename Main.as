@@ -1,13 +1,28 @@
+[Setting category="general" name="Show UI"]
+bool S_showUI = true;
+
+[Setting category="general" name="Set item to default block settings automatically"]
+bool S_setItemToDefaultBlockSettingsAutomatically = false;
+
+bool currentBlockHasBeenSet = false;
+
 void RenderInterface() {
     if (!S_showUI) return;
     CGameEditorItem@ editorItem = cast<CGameEditorItem>(GetApp().Editor);
-    if (editorItem is null) { return; }
+    if (editorItem is null) { currentBlockHasBeenSet = false; return; }
     if (GetLabel().Contains("Block name") ) { return; }
+
+    if (S_setItemToDefaultBlockSettingsAutomatically) {
+        SetItemToDefaultBlockSettings(editorItem);
+        currentBlockHasBeenSet = false;
+    }
 
     if (UI::Begin("SetItemToDefaultBlockSettings", UI::WindowFlags::NoTitleBar|UI::WindowFlags::NoResize|UI::WindowFlags::AlwaysAutoResize)) {
         if (UI::Button("Set to default block settings")) {
             SetItemToDefaultBlockSettings(editorItem);
         }
+        UI::SameLine();
+        S_setItemToDefaultBlockSettingsAutomatically = UI::Checkbox("  Auto", S_setItemToDefaultBlockSettingsAutomatically);
     }
     UI::End();
 }
@@ -40,6 +55,3 @@ string GetLabel() {
     
     return label.Label;
 }
-
-[Setting category="general" name="Show UI"]
-bool S_showUI = true;
