@@ -12,14 +12,16 @@ void RenderInterface() {
     if (editorItem is null) { currentBlockHasBeenSet = false; return; }
     if (GetLabel().Contains("Block name") ) { return; }
 
-    if (S_setItemToDefaultBlockSettingsAutomatically) {
+    if (S_setItemToDefaultBlockSettingsAutomatically && !currentBlockHasBeenSet) {
         SetItemToDefaultBlockSettings(editorItem);
-        currentBlockHasBeenSet = false;
+        GetFrame6Button().OnAction();
+        currentBlockHasBeenSet = true;
     }
 
     if (UI::Begin("SetItemToDefaultBlockSettings", UI::WindowFlags::NoTitleBar|UI::WindowFlags::NoResize|UI::WindowFlags::AlwaysAutoResize)) {
         if (UI::Button("Set to default block settings")) {
             SetItemToDefaultBlockSettings(editorItem);
+            GetFrame6Button().OnAction();
         }
         UI::SameLine();
         S_setItemToDefaultBlockSettingsAutomatically = UI::Checkbox("  Auto", S_setItemToDefaultBlockSettingsAutomatically);
@@ -54,4 +56,21 @@ string GetLabel() {
     CControlLabel@ label = cast<CControlLabel>(frame6.Childs[0]); // LabelName
     
     return label.Label;
+}
+
+CControlButton@ GetFrame6Button() {
+    CDx11Viewport@ viewport = cast<CDx11Viewport>(GetApp().Viewport);
+    CHmsZoneOverlay@ overlay = cast<CHmsZoneOverlay>(viewport.Overlays[2]);
+    CSceneSector@ sector = cast<CSceneSector>(overlay.UserData);
+    CScene2d@ scene = cast<CScene2d>(sector.Scene);
+    CControlFrameStyled@ frame = cast<CControlFrameStyled>(scene.Mobils[0]);
+    CControlFrame@ frame2 = cast<CControlFrame>(frame.Childs[0]);  // InterfaceRoot
+    CControlFrame@ frame3 = cast<CControlFrame>(frame2.Childs[4]); // FrameClassEditor
+    CControlFrame@ frame4 = cast<CControlFrame>(frame3.Childs[1]); // FramePropertiesContainer
+    CControlFrame@ frame5 = cast<CControlFrame>(frame4.Childs[0]); // FrameProperties
+    CControlListCard@ listCard = cast<CControlListCard>(frame5.Childs[1]); // ListCardProperties
+    CControlFrame@ frame6 = cast<CControlFrame>(listCard.Childs[9]); // #6
+    CControlButton@ button = cast<CControlButton>(frame6.Childs[3]);
+
+    return button;
 }
