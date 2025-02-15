@@ -1,3 +1,3 @@
-void get_editorItem() {
+CGameEditorItem@ get_editorItem() {
     return cast<CGameEditorItem>(GetApp().Editor);
 }

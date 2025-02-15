@@ -4,18 +4,16 @@ bool S_showPopupUI = true;
 bool S_showPopupUIWhenOpenplanetUIIsHidden = false;
 [Setting hidden]
 bool S_setItemToDefaultBlockSettingsAutomatically = false;
-[Setting hidden]
-bool S_useNOO = false;
+// [Setting hidden]
+// bool S_useNOO = false;
 [Setting hidden]
 bool S_useCustomSettings = false;
 [Setting hidden]
 bool S_AutomaticallyAddIcon = false;
 
-bool currentBlockHasBeenSet = false;
-
-[SettingsTab name="General" icon="DevTo" order="1"]
+[SettingsTab name="General" icon="Cog" order="1"]
 void RenderSettings() {
-    RT_Settings_General()
+    RT_Settings_General();
 }
 
 void RT_Settings_General() {
@@ -25,9 +23,7 @@ void RT_Settings_General() {
     S_showPopupUIWhenOpenplanetUIIsHidden = UI::Checkbox("Always Show", S_showPopupUIWhenOpenplanetUIIsHidden);
     S_setItemToDefaultBlockSettingsAutomatically = UI::Checkbox("Auto Enable", S_setItemToDefaultBlockSettingsAutomatically);
 
-    S_useNOO = UI::Checkbox("Use NOO", S_useNOO);
-
-    S_useCustomSettings = UI::Checkbox("Custom", S_useCustomSettings);
+    mS_NotOnObject = UI::Checkbox("Use NOO", mS_NotOnObject);
 
     // FIXME: Add a file containing the directions of all the blocks at some point...
     // S_AutomaticallyAddIcon = UI::Checkbox("Icon too", S_AutomaticallyAddIcon);
@@ -39,6 +35,7 @@ void RT_Settings_General() {
         """);
     }
 
+    S_useCustomSettings = UI::Checkbox("Custom", S_useCustomSettings);
     UI::Separator();
 
     if (S_useCustomSettings) {
@@ -46,52 +43,72 @@ void RT_Settings_General() {
         
         mS_SwitchPivotManually = UI::Checkbox("Switch Pivot Manually", mS_SwitchPivotManually);
         
-        mS_FlyStep = UI::InputInt("Fly Step", mS_FlyStep);
-        mS_FlyOffset = UI::InputInt("Fly Offset", mS_FlyOffset);
+        UI::PushItemWidth(150); mS_FlyStep = UI::InputInt("Fly Step", mS_FlyStep); UI::PopItemWidth();
+        UI::PushItemWidth(150); mS_FlyOffset = UI::InputInt("Fly Offset", mS_FlyOffset); UI::PopItemWidth();
         
-        mS_GridHorizontalSize = UI::InputInt("Grid Horizontal Size", mS_GridHorizontalSize);
-        mS_GridHorizontalOffset = UI::InputInt("Grid Horizontal Offset", mS_GridHorizontalOffset);
-        mS_GridVerticalSize = UI::InputInt("Grid Vertical Size", mS_GridVerticalSize);
-        mS_GridVerticalOffset = UI::InputInt("Grid Vertical Offset", mS_GridVerticalOffset);
+
+        UI::PushItemWidth(150); mS_GridHorizontalSize = UI::InputInt("Grid Horizontal Size", mS_GridHorizontalSize); UI::PopItemWidth();
+        UI::PushItemWidth(150); mS_GridHorizontalOffset = UI::InputInt("Grid Horizontal Offset", mS_GridHorizontalOffset); UI::PopItemWidth();
+        UI::PushItemWidth(150); mS_GridVerticalSize = UI::InputInt("Grid Vertical Size", mS_GridVerticalSize); UI::PopItemWidth();
+        UI::PushItemWidth(150); mS_GridVerticalOffset = UI::InputInt("Grid Vertical Offset", mS_GridVerticalOffset); UI::PopItemWidth();
 
         mS_GhostMode = UI::Checkbox("Ghost Mode", mS_GhostMode);
         mS_YawOnly = UI::Checkbox("Yaw Only", mS_YawOnly);
         mS_NotOnObject = UI::Checkbox("Not On Object", mS_NotOnObject);
         mS_AutoRotation = UI::Checkbox("Auto Rotation", mS_AutoRotation);
 
-        mS_PivotSnapDistance = UI::InputInt("Pivot Snap Distance", mS_PivotSnapDistance);
+        UI::PushItemWidth(150); mS_PivotSnapDistance = UI::InputInt("Pivot Snap Distance", mS_PivotSnapDistance); UI::PopItemWidth();
 
         UI::Separator();
 
-        for (int i = 0; i < mS_PivotPositions.Length; i++) {
-            UI::Text("Pivot Position " + (i + 1));
-            mS_PivotPositions[i].x = UI::InputFloat("X##" + i, mS_PivotPositions[i].x);
-            UI::SameLine();
-            mS_PivotPositions[i].y = UI::InputFloat("Y##" + i, mS_PivotPositions[i].y);
-            UI::SameLine();
-            mS_PivotPositions[i].z = UI::InputFloat("Z##" + i, mS_PivotPositions[i].z);
-        }
+        UI::Text("Pivot Positions");
+        UI::PushItemWidth(120); mS_PivotPositions_X = UI::InputInt("X", mS_PivotPositions_X); UI::PopItemWidth();
+        UI::SameLine();
+        UI::PushItemWidth(120); mS_PivotPositions_Y = UI::InputInt("Y", mS_PivotPositions_Y); UI::PopItemWidth();
+        UI::SameLine();
+        UI::PushItemWidth(120); mS_PivotPositions_Z = UI::InputInt("Z", mS_PivotPositions_Z); UI::PopItemWidth();
 
         UI::Separator();
 
-        mS_IconDirection selectedDirection = mS_IconDirection::Automatic;
-        string[] directionNames = {"Automatic", "Import From File", "South East", "North East", "South West", "North West"};
+        UI::PushItemWidth(200);
+        string[] directionNames = {"South East", "North East", "South West", "North West", "Import From File", "Automatic"};
         int selectedIndex = int(selectedDirection);
         if (UI::BeginCombo("Icon Direction", directionNames[selectedIndex])) {
-            for (int i = 0; i < directionNames.Length; i++) {
-            bool isSelected = (selectedIndex == i);
-            if (UI::Selectable(directionNames[i], isSelected)) {
-                selectedIndex = i;
-                selectedDirection = mS_IconDirection(selectedIndex);
-            }
-            if (isSelected) {
-                UI::SetItemDefaultFocus();
-            }
+            for (int i = 0; i < int(directionNames.Length); i++) {
+                bool isSelected = (selectedIndex == i);
+                if (UI::Selectable(directionNames[i], isSelected)) {
+                    selectedIndex = i;
+                    selectedDirection = mS_enumIconDirection(selectedIndex);
+                }
+                if (isSelected) {
+                    UI::SetItemDefaultFocus();
+                }
             }
             UI::EndCombo();
         }
+        UI::PopItemWidth();
+        if (selectedDirection != mS_enumIconDirection::Automatic) {
+            UI::Text("\\$aaa" + "Stronly recommend using 'Automatic' for this setting.");
+        }
+        
+        UI::Separator();
     }
+    
+    UI::Text("Window Position");
+    UI::Text("Current Position: " + UI::GetWindowPos().x + ", " + UI::GetWindowPos().y);
+    UI::Text("Collapsed position:");
+    if (UI::Button("Set Screen Position (col)")) { UI::SetWindowPos(collapsedPopupUIPos); }
+    UI::PushItemWidth(150); collapsedPopupUIPos.x = UI::InputInt("col X", int(collapsedPopupUIPos.x)); UI::PopItemWidth();
+    UI::SameLine();
+    UI::PushItemWidth(150); collapsedPopupUIPos.y = UI::InputInt("col Y", int(collapsedPopupUIPos.y)); UI::PopItemWidth();
+    UI::Text("Expanded position:");
+    if (UI::Button("Set Screen Position (exp)")) { UI::SetWindowPos(expandedPopupUIPos); }
+    UI::PushItemWidth(150); expandedPopupUIPos.x = UI::InputInt("exp X", int(expandedPopupUIPos.x)); UI::PopItemWidth();
+    UI::SameLine();
+    UI::PushItemWidth(150); expandedPopupUIPos.y = UI::InputInt("exp Y", int(expandedPopupUIPos.y)); UI::PopItemWidth();
 }
+[Setting hidden]
+mS_enumIconDirection selectedDirection = mS_enumIconDirection::Automatic;
 
 [Setting hidden]
 bool mS_SwitchPivotManually = false;
@@ -123,12 +140,17 @@ bool mS_AutoRotation = false;
 int mS_PivotSnapDistance = 8;
 
 [Setting hidden]
-array<vec3> mS_PivotPositions = {vec3(16, 0, 16)};
+int mS_PivotPositions_X = 16;
+[Setting hidden]
+int mS_PivotPositions_Y = 0;
+[Setting hidden]
+int mS_PivotPositions_Z = 16;
+
 
 [Setting hidden]
 int mS_IconDirection = 0;
 
-enum mS_IconDirection {
+enum mS_enumIconDirection {
     SouthEast,
     NorthEast,
     SouthWest,
