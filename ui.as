@@ -37,7 +37,7 @@ bool tS_showSettingsUI = true;
 [Setting hidden]
 vec2 collapsedPopupUIPos = vec2(75, 753);
 [Setting hidden]
-vec2 expandedPopupUIPos = vec2(195, 200);
+vec2 expandedPopupUIPos = vec2(195, 75);
 
 void RenderPopupUI() {
     if (editorItem is null) { currentBlockHasBeenSet=false; return; };
