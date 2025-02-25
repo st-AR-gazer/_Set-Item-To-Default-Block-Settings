@@ -94,19 +94,38 @@ void RT_Settings_General() {
         UI::Separator();
     }
     
-    UI::Text("Window Position");
-    UI::Text("Current Position: " + UI::GetWindowPos().x + ", " + UI::GetWindowPos().y);
-    UI::Text("Collapsed position:");
-    if (UI::Button("Set Screen Position (col)")) { UI::SetWindowPos(collapsedPopupUIPos); }
-    UI::PushItemWidth(150); collapsedPopupUIPos.x = UI::InputInt("col X", int(collapsedPopupUIPos.x)); UI::PopItemWidth();
-    UI::SameLine();
-    UI::PushItemWidth(150); collapsedPopupUIPos.y = UI::InputInt("col Y", int(collapsedPopupUIPos.y)); UI::PopItemWidth();
-    UI::Text("Expanded position:");
-    if (UI::Button("Set Screen Position (exp)")) { UI::SetWindowPos(expandedPopupUIPos); }
-    UI::PushItemWidth(150); expandedPopupUIPos.x = UI::InputInt("exp X", int(expandedPopupUIPos.x)); UI::PopItemWidth();
-    UI::SameLine();
-    UI::PushItemWidth(150); expandedPopupUIPos.y = UI::InputInt("exp Y", int(expandedPopupUIPos.y)); UI::PopItemWidth();
+
+
+    if (S_showWindowPosSettings) {
+        // Display header with a clickable chevron down to close the window.
+        UI::Text("Window Position " + Icons::ChevronCircleDown);
+        if (UI::IsItemClicked(UI::MouseButton::Left)) {
+            S_showWindowPosSettings = false;
+        }
+
+        UI::Text("Current Position: " + UI::GetWindowPos().x + ", " + UI::GetWindowPos().y);
+        UI::Text("Collapsed position:");
+        if (UI::Button("Set Screen Position (col)")) { UI::SetWindowPos(collapsedPopupUIPos); }
+        UI::PushItemWidth(150); collapsedPopupUIPos.x = UI::InputInt("col X", int(collapsedPopupUIPos.x)); UI::PopItemWidth();
+        UI::SameLine();
+        UI::PushItemWidth(150); collapsedPopupUIPos.y = UI::InputInt("col Y", int(collapsedPopupUIPos.y)); UI::PopItemWidth();
+        UI::Text("Expanded position:");
+        if (UI::Button("Set Screen Position (exp)")) { UI::SetWindowPos(expandedPopupUIPos); }
+        UI::PushItemWidth(150); expandedPopupUIPos.x = UI::InputInt("exp X", int(expandedPopupUIPos.x)); UI::PopItemWidth();
+        UI::SameLine();
+        UI::PushItemWidth(150); expandedPopupUIPos.y = UI::InputInt("exp Y", int(expandedPopupUIPos.y)); UI::PopItemWidth();
+    } else {
+        // Display header with a clickable chevron right to open the window.
+        UI::Text("Window Position " + Icons::ChevronCircleRight);
+        if (UI::IsItemClicked(UI::MouseButton::Left)) {
+            S_showWindowPosSettings = true;
+        }
+    }
 }
+
+[Setting hidden]
+bool S_showWindowPosSettings = false;
+
 [Setting hidden]
 mS_enumIconDirection selectedDirection = mS_enumIconDirection::Automatic;
 
@@ -132,12 +151,12 @@ bool mS_GhostMode = true;
 [Setting hidden]
 bool mS_YawOnly = false;
 [Setting hidden]
-bool mS_NotOnObject = false;
+bool mS_NotOnObject = true;
 [Setting hidden]
 bool mS_AutoRotation = false;
 
 [Setting hidden]
-int mS_PivotSnapDistance = 8;
+int mS_PivotSnapDistance = -1;
 
 [Setting hidden]
 int mS_PivotPositions_X = 16;

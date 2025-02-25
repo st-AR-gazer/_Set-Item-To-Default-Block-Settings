@@ -41,6 +41,10 @@ void SetItemSettings() {
     // Icon Direction
     // editorItem.ItemModel.IconQuarterRotationY = ; // probably where the icon rotation is stored.
     // editorItem.ItemModel.IconUseAutoRender = ; // dictates which one we should use... (from CPlugFile or auto-generated)
+    
+    // ABORT THIS MIGHT NOT BE THE CORRECT WAY TO GET THIS INFO... IT MIGHT JUST BE THE ROTATION OF THE BLOCK... 
+    // noticed it when editing the block rotation on some of the penalty road blocks...
+
     SetIconSettings(editorItem.ItemModel.IconQuarterRotationY);
 
     GetFrame6Button().OnAction(); // Needed to visually show that the update has happened
